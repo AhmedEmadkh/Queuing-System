@@ -27,8 +27,8 @@ namespace Queuing_System.Services
         }
 
         #region Abstract methods (to be implemented in derived classes)
-        protected abstract void Simulate(); // Core simulation logic for specific models
-        //protected abstract void SimulateArrivalAndDeparture(Person person); // Simulate Arrival and Departure According to the Model 
+         // Core simulation logic for specific models
+        protected abstract void SimulateArrivalAndDeparture(); // Simulate Arrival and Departure According to the Model 
         #endregion
 
         #region Shared Methods
@@ -46,35 +46,6 @@ namespace Queuing_System.Services
             PersonsList = PersonsList.OrderBy(p => p.ArrivalTime).ToList();
         }
 
-        protected void ClockSimulation()
-        {
-            double currentTime = 0;
-
-            foreach (var person in PersonsList)
-            {
-                if (currentTime <= person.ArrivalTime)
-                {
-                    person.StartTime = person.ArrivalTime;
-                    WaitingTimes.Add(person.ServiceTime);
-                    WaitingTimesInQueue.Add(0);
-                }
-                else
-                {
-                    person.StartTime = currentTime;
-                    WaitingTimes.Add((person.StartTime - person.ArrivalTime) + person.ServiceTime);
-                    WaitingTimesInQueue.Add(person.StartTime - person.ArrivalTime);
-                }
-
-                person.DepartureTime = person.StartTime + person.ServiceTime;
-                TimeEventList.Add(person.ArrivalTime);
-                TimeEventList.Add(person.DepartureTime);
-
-                currentTime = person.DepartureTime;
-            }
-
-            TimeEventList = TimeEventList.OrderBy(t => t).ToList();
-        }
-
         protected void UpdateQueueLengths()
         {
             QueueLengths.Clear();
@@ -90,12 +61,19 @@ namespace Queuing_System.Services
                 }
             }
         }
-
+        protected void Simulate()
+        {
+            foreach (var person in PersonsList)
+            {
+                person.ArrivalTime *= (AvgArrivalTime * 2);
+                person.ServiceTime *= (AvgServiceTime * 2);
+            }
+        }
         // Public Method to Run the Simulation
         public void RunSimulation()
         {
             Simulate(); // Calls the derived class implementation
-            ClockSimulation();
+            SimulateArrivalAndDeparture();
             UpdateQueueLengths();
         }
 
