@@ -27,20 +27,25 @@
                     <thead>
                         <tr>
                             <th>Time</th>
+                            <th>Queue Length</th>
                             <th>Waiting Times</th>
                             <th>Waiting Times In Queue</th>
-                            <th>Queue Length</th>
+                            <th>Arrival Time</th>
+                            <th>Departure Time</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for (int i = 0; i < Model.WaitingTimes.Count; i++)
+                        @for (int i = 0; i < Model.TimeEvents.Count; i++)
                         {
                             <tr>
-                                <td>@Model.TimeEvents[i]</td>
-                                <td>@Model.WaitingTimes[i]</td>
-                                <td>@Model.WaitingTimesInQueue[i]</td>
+                                <td>@Math.Round(Model.TimeEvents[i],5)</td>
                                 <td>@Model.QueueLengths[i]</td>
+                                <td>@(i < Model.WaitingTimes.Count ? Math.Round(Model.WaitingTimes[i], 5).ToString() : "")</td>
+                                <td>@(i < Model.WaitingTimesInQueue.Count ? Math.Round(Model.WaitingTimesInQueue[i], 5).ToString() : "")</td>
+                                <td>@(i < Model.ArrivalTime.Count ? Math.Round(Model.ArrivalTime[i], 5).ToString() : "")</td>
+                                <td>@(i < Model.ServiceTime.Count ? Math.Round(Model.ServiceTime[i] + Model.ArrivalTime[i] + Model.WaitingTimesInQueue[i], 5).ToString() : "")</td>
                             </tr>
+
                         }
                     </tbody>
                 </table>

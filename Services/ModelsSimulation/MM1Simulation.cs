@@ -10,8 +10,8 @@
             // M/M/1 specific logic
             foreach (var person in PersonsList)
             {
-                person.ArrivalTime *= AvgArrivalTime;
-                person.ServiceTime *= AvgServiceTime;
+                person.ArrivalTime *= (AvgArrivalTime * 2);
+                person.ServiceTime *= (AvgServiceTime * 2);
             }
         }
     }

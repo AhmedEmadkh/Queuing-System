@@ -39,8 +39,8 @@ namespace Queuing_System.Services
             {
                 PersonsList.Add(new Person
                 {
-                    ArrivalTime = Math.Round(random.NextDouble(), 2),
-                    ServiceTime = Math.Round(random.NextDouble(), 2)
+                    ArrivalTime = Math.Round((double)random.NextDouble(), 5, MidpointRounding.AwayFromZero),
+                    ServiceTime = Math.Round((double)random.NextDouble(), 5, MidpointRounding.AwayFromZero)
                 });
             }
             PersonsList = PersonsList.OrderBy(p => p.ArrivalTime).ToList();
@@ -102,12 +102,17 @@ namespace Queuing_System.Services
         // Results Getter
         public SimulationResults GetResults()
         {
+            var ArrivalTime = PersonsList.Select(P => P.ArrivalTime).ToList();
+            var ServiceTime = PersonsList.Select(P => P.ServiceTime).ToList();
             return new SimulationResults
             {
                 TimeEvents = TimeEventList,
                 QueueLengths = QueueLengths,
-                WaitingTimes = WaitingTimesInQueue,
+                WaitingTimes = WaitingTimes,
                 WaitingTimesInQueue = WaitingTimesInQueue,
+                ArrivalTime = ArrivalTime,
+                ServiceTime = ServiceTime
+
             };
         } 
         #endregion
