@@ -1,0 +1,54 @@
+﻿@model SimulationResults
+
+@{
+    ViewData["Title"] = "Simulation Results";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Simulation Results</h2>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Simulation Plot</h4>
+        </div>
+        <div class="card-body text-center">
+            <img src="data:image/png;base64,@ViewBag.PlotImage" alt="Simulation Plot" />
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Simulation Data</h4>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.TimeEvents != null && Model.TimeEvents.Count > 0)
+            {
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Waiting Times</th>
+                            <th>Waiting Times In Queue</th>
+                            <th>Queue Length</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.WaitingTimes.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model.TimeEvents[i]</td>
+                                <td>@Model.WaitingTimes[i]</td>
+                                <td>@Model.WaitingTimesInQueue[i]</td>
+                                <td>@Model.QueueLengths[i]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No simulation data available.</p>
+            }
+        </div>
+    </div>
+</div>

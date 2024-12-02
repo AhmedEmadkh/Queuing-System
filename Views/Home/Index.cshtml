@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Welcome Section -->
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header text-center bg-primary text-white">
+                    <h2>Welcome to the Queueing System</h2>
+                </div>
+                <div class="card-body">
+                    <p class="lead text-center">
+                        This is a tool for calculating key performance metrics of queuing systems. Choose the appropriate parameters, and we will calculate the average number of customers in the system, queue length, and average waiting time.
+                    </p>
+                    <div class="text-center">
+                        <a href="@Url.Action("Index", "Queue")" class="btn btn-primary btn-lg">Start Calculations</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>What You Can Calculate</h5>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        <li>Average number of customers in the system (L)</li>
+                        <li>Average number of customers in the queue (Lq)</li>
+                        <li>Average waiting time in the system (W)</li>
+                        <li>Average waiting time in the queue (Wq)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>Why Use This System?</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        Our system provides efficient queuing analysis based on real-time input. Whether you're managing a single server or multiple servers, this tool is designed to help you optimize your resources and improve service delivery.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5>How It Works</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        Simply input the arrival time, service time, number of servers, and total number of customers in service. Our system will calculate the essential performance metrics for you!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

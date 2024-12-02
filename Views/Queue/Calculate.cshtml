@@ -1,0 +1,38 @@
+﻿@model ResultModel
+
+@{
+    ViewData["Title"] = "Queue Calculation Results";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Calculation Results</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Average number of customers in the system (L)</td>
+                <td>@Model.L</td>
+            </tr>
+            <tr>
+                <td>Average number of customers in the queue (Lq)</td>
+                <td>@Model.Lq</td>
+            </tr>
+            <tr>
+                <td>Average time a customer spends in the system (W)</td>
+                <td>@Model.W</td>
+            </tr>
+            <tr>
+                <td>Average time a customer spends in the queue (Wq)</td>
+                <td>@Model.Wq</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="@Url.Action("Index", "Queue")" class="btn btn-primary">Back to Input</a>
+</div>

@@ -1,0 +1,69 @@
+﻿@model QueueModel
+
+@{
+    // ViewData["Title"] = "Queue Calculator";
+}
+<div class="container mt-5">
+    <h2 class="text-center">Queue Calculator</h2>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+    <!-- Form to input the data -->
+    <form method="post" asp-action="Calculate">
+        <div class="card">
+            <div class="card-header">
+                <h4>Queue Parameters</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-group row my-2">
+                    <label for="ArrivalTime" class="col-sm-3 col-form-label">Arrival Time (λ)</label>
+                    <div class="col-sm-9">
+                        <input type="number" min="0" step="any" id="ArrivalTime" name="ArrivalTime" class="form-control" value="@Model.ArrivalTime" required />
+                    </div>
+                </div>
+
+                <div class="form-group row my-2">
+                    <label for="ServiceTime" class="col-sm-3 col-form-label">Service Time (μ)</label>
+                    <div class="col-sm-9">
+                        <input type="number" min="0" step="any" id="ServiceTime" name="ServiceTime" class="form-control" value="@Model.ServiceTime" required />
+                    </div>
+                </div>
+
+                <div class="form-group row my-2">
+                    <label for="NumberOfServers" class="col-sm-3 col-form-label">Number of Servers (c)</label>
+                    <div class="col-sm-9">
+                        <input type="number" min="1" id="NumberOfServers" name="NumberOfServers" class="form-control" value="@Model.NumberOfServers" required />
+                    </div>
+                </div>
+
+                <div class="form-group row my-2">
+                    <label for="MaxQueueSize" class="col-sm-3 col-form-label">System Capacity (K)</label>
+                    <div class="col-sm-9">
+                        <input type="number" min="0" id="MaxQueueSize" name="MaxQueueSize" class="form-control" value="@Model.TotalCapacity" placeholder="∞" />
+                    </div>
+                </div>
+                <div class="form-group row my-2">
+                    <label for="simPersons" class="col-sm-3 col-form-label">Number Of Persons For Simulation</label>
+                    <div class="col-sm-9">
+                        <input type="number" min="0" id="simPersons" name="simPersons" class="form-control" value="@Model.simPersons" required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit and Simulate buttons -->
+            <div class="card-footer text-center">
+                <button type="submit" class="btn btn-primary" asp-action="Calculate">Calculate</button>
+                <button type="submit" class="btn btn-success" asp-action="Simulate">Simulate</button>
+            </div>
+        </div>
+    </form>
+</div>
