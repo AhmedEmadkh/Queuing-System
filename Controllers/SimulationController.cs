@@ -11,6 +11,7 @@ namespace Queuing_System.Controllers
         public SimulationController(PlotService plotService)
         {
             _plotService = plotService;
+
         }
 
         public IActionResult MM1Simulation(double arrivalTime, double serviceTime, int numberOfServers, int? totalCapacity,int simPersons)
