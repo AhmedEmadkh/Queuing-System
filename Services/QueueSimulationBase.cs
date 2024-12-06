@@ -5,7 +5,7 @@ namespace Queuing_System.Services
 {
     public abstract class QueueSimulationBase
     {
-        // Shared properties
+        // Properties
         protected List<Person> PersonsList = new();
         protected List<double> TimeEventList = new();
         protected List<int> QueueLengths = new();
@@ -26,9 +26,8 @@ namespace Queuing_System.Services
             GeneratePersons(simPersons);
         }
 
-        #region Abstract methods (to be implemented in derived classes)
-         // Core simulation logic for specific models
-        protected abstract void SimulateArrivalAndDeparture(); // Simulate Arrival and Departure According to the Model 
+        #region Abstract methods
+        protected abstract void SimulateArrivalAndDeparture(); // To be implemented in derived classes
         #endregion
 
         #region Shared Methods
@@ -39,8 +38,8 @@ namespace Queuing_System.Services
             {
                 PersonsList.Add(new Person
                 {
-                    ArrivalTime = Math.Round((double)random.NextDouble(), 5, MidpointRounding.AwayFromZero),
-                    ServiceTime = Math.Round((double)random.NextDouble(), 5, MidpointRounding.AwayFromZero)
+                    ArrivalTime = Math.Round(random.NextDouble() * AvgArrivalTime, 5),
+                    ServiceTime = Math.Round(random.NextDouble() * AvgServiceTime, 5)
                 });
             }
             PersonsList = PersonsList.OrderBy(p => p.ArrivalTime).ToList();
@@ -49,50 +48,40 @@ namespace Queuing_System.Services
         protected void UpdateQueueLengths()
         {
             QueueLengths.Clear();
+            int currentQueueLength = 0;
+
             foreach (var time in TimeEventList)
             {
                 if (PersonsList.Any(p => p.ArrivalTime == time))
                 {
-                    QueueLengths.Add(QueueLengths.LastOrDefault() + 1);
+                    currentQueueLength++;
                 }
-                else if (PersonsList.Any(p => p.DepartureTime == time))
+                if (PersonsList.Any(p => p.DepartureTime == time) && currentQueueLength > 0)
                 {
-                    QueueLengths.Add(QueueLengths.LastOrDefault() - 1);
+                    currentQueueLength--;
                 }
+                QueueLengths.Add(currentQueueLength);
             }
         }
-        protected void Simulate()
-        {
-            foreach (var person in PersonsList)
-            {
-                person.ArrivalTime *= (AvgArrivalTime * 2);
-                person.ServiceTime *= (AvgServiceTime * 2);
-            }
-        }
-        // Public Method to Run the Simulation
+
         public void RunSimulation()
         {
-            Simulate(); // Calls the derived class implementation
             SimulateArrivalAndDeparture();
             UpdateQueueLengths();
         }
 
-        // Results Getter
         public SimulationResults GetResults()
         {
-            var ArrivalTime = PersonsList.Select(P => P.ArrivalTime).ToList();
-            var ServiceTime = PersonsList.Select(P => P.ServiceTime).ToList();
             return new SimulationResults
             {
                 TimeEvents = TimeEventList,
                 QueueLengths = QueueLengths,
                 WaitingTimes = WaitingTimes,
                 WaitingTimesInQueue = WaitingTimesInQueue,
-                ArrivalTime = ArrivalTime,
-                ServiceTime = ServiceTime
-
+                ArrivalTime = PersonsList.Select(p => p.ArrivalTime).ToList(),
+                ServiceTime = PersonsList.Select(p => p.ServiceTime).ToList()
             };
-        } 
+        }
         #endregion
     }
 }

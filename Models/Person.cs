@@ -7,6 +7,7 @@
         public string State { get; set; } = "e";
         public double StartTime { get; set; }
         public double DepartureTime { get; set; }
+        public bool Served { get; set; }
 
         public void SetState(string state)
         {

@@ -3,6 +3,13 @@
 @{
     ViewData["Title"] = "Simulation Results";
 }
+@functions {
+    double SafeGetValue(List<double> list, int index)
+    {
+        return (index >= 0 && index < list.Count) ? list[index] : 0;
+    }
+}
+
 
 <div class="container mt-5">
     <h2 class="text-center">Simulation Results</h2>
@@ -39,11 +46,16 @@
                         {
                             <tr>
                                 <td>@Math.Round(Model.TimeEvents[i],5)</td>
-                                <td>@Model.QueueLengths[i]</td>
+                                <td>@(i < Model.QueueLengths.Count ? Model.QueueLengths[i] : "")</td>
                                 <td>@(i < Model.WaitingTimes.Count ? Math.Round(Model.WaitingTimes[i], 5).ToString() : "")</td>
                                 <td>@(i < Model.WaitingTimesInQueue.Count ? Math.Round(Model.WaitingTimesInQueue[i], 5).ToString() : "")</td>
                                 <td>@(i < Model.ArrivalTime.Count ? Math.Round(Model.ArrivalTime[i], 5).ToString() : "")</td>
-                                <td>@(i < Model.ServiceTime.Count ? Math.Round(Model.ServiceTime[i] + Model.ArrivalTime[i] + Model.WaitingTimesInQueue[i], 5).ToString() : "")</td>
+                                <td>
+                                    @Math.Round(
+                                             SafeGetValue(Model.ServiceTime, i) +
+                                             SafeGetValue(Model.ArrivalTime, i) +
+                                             SafeGetValue(Model.WaitingTimesInQueue, i), 5)
+                                </td>
                             </tr>
 
                         }
