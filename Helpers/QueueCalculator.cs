@@ -2,8 +2,8 @@
 
 namespace Queuing_System.Helpers
 {
-	public class QueueCalculator : IQueueCalculator
-	{
+    public class QueueCalculator : IQueueCalculator
+    {
         public ResultModel CalculateQueueParams(QueueModel model)
         {
             try
@@ -70,8 +70,88 @@ namespace Queuing_System.Helpers
         #region MM1K
         public ResultModel Calculate_M_M_1_k(QueueModel model, double lambda, double mu)
         {
-            throw new NotImplementedException();
-        } 
+
+            double ro = lambda / mu;
+
+            if (model.TotalCapacity is null)
+                throw new ApplicationException("Total Capacity Is Null");
+            int k = model.TotalCapacity.Value;
+
+
+            double pk = FindPk(ro, k);
+
+
+            double L = FindL(ro, k);
+
+
+            double Lq = FindLq(L, ro, pk);
+
+
+            double W = FindW(L, lambda, pk);
+
+
+            double Wq = FindWq(W, mu);
+
+            // Return results
+            return new ResultModel
+            {
+                L = L,
+                Lq = Lq,
+                W = W,
+                Wq = Wq
+            };
+        }
+
+        private double FindPk(double ro, int k)
+        {
+            if (IsRoEqualTo1(ro))
+            {
+                return 1.0 / (k + 1.0);
+            }
+            else
+            {
+                return Math.Pow(ro, k) * ((1 - ro) / (1 - Math.Pow(ro, k + 1)));
+            }
+        }
+
+        private bool IsRoEqualTo1(double ro)
+        {
+            return ro == 1;
+        }
+
+        private double FindL(double ro, int k)
+        {
+            if (IsRoEqualTo1(ro))
+            {
+                return k / 2.0;
+            }
+            else
+            {
+                return ro * ((1 - (k + 1) * Math.Pow(ro, k) + k * Math.Pow(ro, k + 1)) /
+                             ((1 - ro) * (1 - Math.Pow(ro, k + 1))));
+            }
+        }
+
+        private double FindLq(double L, double ro, double pk)
+        {
+            return L - ro * (1 - pk);
+        }
+
+        private double FindW(double L, double lambda, double pk)
+        {
+            double lambdaD = LambdaD(lambda, pk);
+            return L / lambdaD;
+        }
+
+        private double LambdaD(double lambda, double pk)
+        {
+            return lambda * (1 - pk);
+        }
+
+        private double FindWq(double W, double mu)
+        {
+            return W - (1 / mu);
+        }
         #endregion
         #region MMC
         public ResultModel Calculate_M_M_c(QueueModel model, double lambda, double mu)
@@ -148,7 +228,7 @@ namespace Queuing_System.Helpers
         public ResultModel Calculate_M_M_c_k(QueueModel model, double lambda, double mu)
         {
             throw new NotImplementedException();
-        } 
+        }
         #endregion
         #region Helper Methods
         // Helper method for factorial calculation

@@ -2,6 +2,8 @@
 using Queuing_System.Services.ModelsSimulation;
 using Queuing_System.Services;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using static SkiaSharp.HarfBuzz.SKShaper;
+using Queuing_System.Models;
 
 namespace Queuing_System.Controllers
 {
@@ -24,13 +26,7 @@ namespace Queuing_System.Controllers
             // Get simulation results
             var result = simulation.GetResults();
 
-            // Generate a plot
-            var plotModel = _plotService.CreateQueuePlot(result.TimeEvents, result.QueueLengths);
-            byte[] imageBytes = _plotService.ExportPlotToPng(plotModel, 800, 400);
-            string base64Image = Convert.ToBase64String(imageBytes);
-
-            // Pass data to the view
-            ViewBag.PlotImage = base64Image;
+            Plot(result);
             //ViewBag.QueueLengths = result.QueueLengths;
             //ViewBag.TimePoints = result.TimeEvents;
 
@@ -54,12 +50,7 @@ namespace Queuing_System.Controllers
                 // Get simulation results
                 var result = simulation.GetResults();
 
-                // Generate a plot
-                var plotModel = _plotService.CreateQueuePlot(result.TimeEvents, result.QueueLengths);
-                byte[] imageBytes = _plotService.ExportPlotToPng(plotModel, 800, 400);
-                string base64Image = Convert.ToBase64String(imageBytes);
-
-                ViewBag.PlotImage = base64Image;
+                Plot(result);
                 return View("SimulationResults", result);
             }
             catch (Exception ex)
@@ -87,12 +78,7 @@ namespace Queuing_System.Controllers
                 // Get simulation results
                 var result = simulation.GetResults();
 
-                // Generate a plot
-                var plotModel = _plotService.CreateQueuePlot(result.TimeEvents, result.QueueLengths);
-                byte[] imageBytes = _plotService.ExportPlotToPng(plotModel, 800, 400);
-                string base64Image = Convert.ToBase64String(imageBytes);
-
-                ViewBag.PlotImage = base64Image;
+                Plot(result);
                 return View("SimulationResults", result);
             }
             catch (Exception ex)
@@ -120,12 +106,7 @@ namespace Queuing_System.Controllers
                 // Get simulation results
                 var result = simulation.GetResults();
 
-                // Generate a plot
-                var plotModel = _plotService.CreateQueuePlot(result.TimeEvents, result.QueueLengths);
-                byte[] imageBytes = _plotService.ExportPlotToPng(plotModel, 800, 400);
-                string base64Image = Convert.ToBase64String(imageBytes);
-
-                ViewBag.PlotImage = base64Image;
+                Plot(result);
                 return View("SimulationResults", result);
             }
             catch (Exception ex)
@@ -134,6 +115,15 @@ namespace Queuing_System.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View("SimulationResults");
             }
+        }
+        private void Plot(SimulationResults result)
+        {
+            // Generate a plot
+            var plotModel = _plotService.CreateQueuePlot(result.TimeEvents, result.QueueLengths);
+            byte[] imageBytes = _plotService.ExportPlotToPng(plotModel, 1200, 400);
+            string base64Image = Convert.ToBase64String(imageBytes);
+
+            ViewBag.PlotImage = base64Image;
         }
     }
 }
