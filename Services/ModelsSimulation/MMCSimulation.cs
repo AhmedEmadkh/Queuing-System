@@ -9,67 +9,50 @@
 
         protected override void SimulateArrivalAndDeparture()
         {
-            // Initialize server end times
-            List<double> serverEndTimes = new List<double>(new double[NumberOfServers]);
-            Queue<int> waitingQueue = new Queue<int>();
+            var serverAvailability = Enumerable.Repeat(0.0, NumberOfServers).ToList();
 
             foreach (var person in PersonsList)
             {
-                double arrivalTime = person.ArrivalTime;
-
-                // Check server availability
-                int availableServer = serverEndTimes.FindIndex(endTime => endTime <= arrivalTime);
-                if (availableServer != -1)
+                // Check if the arrival time is greater than or equal to the earliest server availability
+                if (person.ArrivalTime >= serverAvailability.Min())
                 {
-                    // Serve the person immediately
-                    person.StartTime = arrivalTime;
-                    person.DepartureTime = arrivalTime + person.ServiceTime;
-                    person.Served = true;
-
-                    // Update server end time
-                    serverEndTimes[availableServer] = person.DepartureTime;
-
-                    // No waiting time
-                    WaitingTimes.Add(0);
-                    WaitingTimesInQueue.Add(0);
+                    person.StartTime = person.ArrivalTime;
                 }
                 else
                 {
-                    // Add to waiting queue
-                    waitingQueue.Enqueue(PersonsList.IndexOf(person));
+                    // Assign the earliest available server
+                    person.StartTime = serverAvailability.Min();
                 }
 
-                // Serve waiting queue when a server becomes available
-                while (waitingQueue.Count > 0)
-                {
-                    int waitingCustomerIndex = waitingQueue.Peek();
-                    int freeServer = serverEndTimes.FindIndex(endTime => endTime <= arrivalTime);
+                // Calculate the departure time
+                person.DepartureTime = person.StartTime + person.ServiceTime;
 
-                    if (freeServer == -1) break; // No free server, exit loop
+                // Update server availability
+                int serverIndex = serverAvailability.IndexOf(serverAvailability.Min());
+                serverAvailability[serverIndex] = person.DepartureTime;
 
-                    var waitingCustomer = PersonsList[waitingCustomerIndex];
-
-                    // Serve the next customer in the queue
-                    waitingCustomer.StartTime = serverEndTimes[freeServer];
-                    waitingCustomer.DepartureTime = waitingCustomer.StartTime + waitingCustomer.ServiceTime;
-                    waitingCustomer.Served = true;
-
-                    // Update server end time
-                    serverEndTimes[freeServer] = waitingCustomer.DepartureTime;
-
-                    // Record waiting time
-                    double waitingTime = waitingCustomer.StartTime - waitingCustomer.ArrivalTime;
-                    double waitingTime_Q = (waitingCustomer.StartTime - waitingCustomer.ArrivalTime) + waitingCustomer.ServiceTime;
-                    WaitingTimes.Add(waitingTime);
-                    WaitingTimesInQueue.Add(waitingTime_Q);
-
-                    // Remove from queue
-                    waitingQueue.Dequeue();
-                }
+                // Add to event lists
                 TimeEventList.Add(person.ArrivalTime);
                 TimeEventList.Add(person.DepartureTime);
             }
+
             TimeEventList = TimeEventList.OrderBy(t => t).ToList();
+
+            // Remove blocked persons (those exceeding capacity)
+
+            // Calculate waiting times
+            CalculateWaitingTimes();
+        }
+        private void CalculateWaitingTimes()
+        {
+            foreach (var person in PersonsList)
+            {
+                var waitingTime = person.DepartureTime - person.ArrivalTime;
+                WaitingTimes.Add(waitingTime);
+
+                var waitingTimeInQueue = person.StartTime - person.ArrivalTime;
+                WaitingTimesInQueue.Add(waitingTimeInQueue);
+            }
         }
     }
 }

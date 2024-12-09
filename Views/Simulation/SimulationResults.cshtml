@@ -8,8 +8,12 @@
     {
         return (index >= 0 && index < list.Count) ? list[index] : 0;
     }
-}
 
+    bool IsBlocked(int index, List<int> queueLengths, int capacity)
+    {
+        return index < queueLengths.Count && queueLengths[index] > capacity;
+    }
+}
 
 <div class="container mt-5">
     <h2 class="text-center">Simulation Results</h2>
@@ -33,31 +37,54 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Time</th>
-                            <th>Queue Length</th>
+                            <th>Person ID</th>
                             <th>Waiting Times</th>
                             <th>Waiting Times In Queue</th>
                             <th>Arrival Time</th>
+                            <th>Start Service Time</th>
                             <th>Departure Time</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @for (int i = 0; i < Model.TimeEvents.Count; i++)
+                        @for (int i = 0; i < Model.Persons.Count; i++)
                         {
                             <tr>
-                                <td>@Math.Round(Model.TimeEvents[i],5)</td>
-                                <td>@(i < Model.QueueLengths.Count ? Model.QueueLengths[i] : "")</td>
+                                <td>@(i+1)</td>
+                                @* <td>@(i < Model.QueueLengths.Count ? Model.QueueLengths[i] : "")</td> *@
                                 <td>@(i < Model.WaitingTimes.Count ? Math.Round(Model.WaitingTimes[i], 5).ToString() : "")</td>
                                 <td>@(i < Model.WaitingTimesInQueue.Count ? Math.Round(Model.WaitingTimesInQueue[i], 5).ToString() : "")</td>
-                                <td>@(i < Model.ArrivalTime.Count ? Math.Round(Model.ArrivalTime[i], 5).ToString() : "")</td>
+                                <td>@Math.Round(Model.Persons[i].ArrivalTime,5)</td>
                                 <td>
-                                    @Math.Round(
-                                             SafeGetValue(Model.ServiceTime, i) +
-                                             SafeGetValue(Model.ArrivalTime, i) +
-                                             SafeGetValue(Model.WaitingTimesInQueue, i), 5)
+                                    @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value : int.MaxValue))
+                                    {
+                                        <span class="text-danger">Φ</span>
+                                    }
+                                    else
+                                    {
+                                        @Math.Round(Model.Persons[i].StartTime, 5)
+                                    }
+                                </td>
+                                <td>
+                                    @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value : int.MaxValue))
+                                    {
+                                        <span class="text-danger">Φ</span>
+                                    }
+                                    else{
+                                        @Math.Round(Model.Persons[i].DepartureTime, 5)
+                                    }
+                                </td>
+                                <td>
+                                    @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value: int.MaxValue))
+                                    {
+                                        <span class="text-danger">Blocked</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">Served</span>
+                                    }
                                 </td>
                             </tr>
-
                         }
                     </tbody>
                 </table>

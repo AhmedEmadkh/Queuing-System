@@ -8,6 +8,7 @@
         public double StartTime { get; set; }
         public double DepartureTime { get; set; }
         public bool Served { get; set; }
+        public bool IsBlocked { get; set; }
 
         public void SetState(string state)
         {

@@ -13,6 +13,14 @@ namespace Queuing_System.Services
         protected List<double> WaitingTimesInQueue = new();
 
         protected int NumberOfServers;
+        private int? capcity;
+
+        public int? Capacity
+        {
+            get { return capcity ; }
+            set { capcity = value.HasValue ? value.Value : 0; }
+        }
+
         protected double AvgArrivalTime;
         protected double AvgServiceTime;
 
@@ -45,43 +53,118 @@ namespace Queuing_System.Services
             PersonsList = PersonsList.OrderBy(p => p.ArrivalTime).ToList();
         }
 
+        protected void UpdateQueueLengthsWithCapacity()
+        {
+            QueueLengths.Clear();
+            int currentQueueLength = 0;
+
+            // A list to track the blocked persons based on arrival time and queue state
+            var blockedPersons = new List<Person>();
+
+            foreach (var time in TimeEventList.OrderBy(t => t))
+            {
+                // Check for arriving persons at this time
+                var arrivingPersons = PersonsList.Where(p => p.ArrivalTime == time).ToList();
+
+                foreach (var person in arrivingPersons)
+                {
+                    // If capacity is defined and the queue length exceeds capacity, block the person
+                    if (Capacity.HasValue && currentQueueLength <= Capacity.Value)
+                    {
+                        // Person enters the queue
+                        currentQueueLength++;
+                    }
+                    else if(currentQueueLength > 0)
+                    {
+                        // Person is blocked, so we don't increment currentQueueLength
+                        blockedPersons.Add(person); // Track blocked persons
+                    }
+                }
+
+                // Check for departing persons at this time and update the queue length
+                var departingPersons = PersonsList.Where(p => p.DepartureTime == time).ToList();
+                foreach (var person in departingPersons)
+                {
+                    if (currentQueueLength > 0)
+                    {
+                        currentQueueLength--;
+                    }
+                }
+
+                // Add the current queue length to the QueueLengths list
+                QueueLengths.Add(currentQueueLength);
+            }
+        }
         protected void UpdateQueueLengths()
         {
             QueueLengths.Clear();
             int currentQueueLength = 0;
 
-            foreach (var time in TimeEventList)
+            // A list to track the blocked persons based on arrival time and queue state
+            var blockedPersons = new List<Person>();
+
+            foreach (var time in TimeEventList.OrderBy(t => t))
             {
-                if (PersonsList.Any(p => p.ArrivalTime == time))
-                {
+                // Check for arriving persons at this time
+                var arrivingTimes = PersonsList.Where(p => p.ArrivalTime == time).Select(p => p.ArrivalTime).ToList();
+
+                // Check for departing persons at this time and update the queue length
+                var departingTimes = PersonsList.Where(p => p.DepartureTime == time).Select(p => p.DepartureTime).ToList();
+                if (arrivingTimes.Contains(time))
                     currentQueueLength++;
-                }
-                if (PersonsList.Any(p => p.DepartureTime == time) && currentQueueLength > 0)
-                {
+
+                if (departingTimes.Contains(time))
                     currentQueueLength--;
-                }
+
+
+
+                // Add the current queue length to the QueueLengths list
                 QueueLengths.Add(currentQueueLength);
             }
         }
 
+
+
         public void RunSimulation()
         {
             SimulateArrivalAndDeparture();
-            UpdateQueueLengths();
+            if(Capacity.HasValue)
+            {
+                UpdateQueueLengthsWithCapacity();
+            }
+            else
+            {
+                UpdateQueueLengths();
+            }
         }
 
         public SimulationResults GetResults()
         {
+            var isBlockedList = new List<bool>();
+
+            // Only calculate blocked status if Capacity is defined
+            if (Capacity.HasValue)
+            {
+                for (int i = 0; i < PersonsList.Count; i++)
+                {
+                    bool isBlocked = i < QueueLengths.Count && QueueLengths[i] > Capacity.Value;
+                    isBlockedList.Add(isBlocked);
+                }
+            }
+
             return new SimulationResults
             {
                 TimeEvents = TimeEventList,
                 QueueLengths = QueueLengths,
                 WaitingTimes = WaitingTimes,
                 WaitingTimesInQueue = WaitingTimesInQueue,
-                ArrivalTime = PersonsList.Select(p => p.ArrivalTime).ToList(),
-                ServiceTime = PersonsList.Select(p => p.ServiceTime).ToList()
+                Persons = PersonsList,
+                IsBlocked = isBlockedList,
+                Capacity = Capacity // Include Capacity if applicable
             };
         }
+
+
         #endregion
     }
 }
