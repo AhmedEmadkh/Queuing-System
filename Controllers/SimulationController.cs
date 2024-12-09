@@ -17,7 +17,7 @@ namespace Queuing_System.Controllers
 
         }
 
-        public IActionResult MM1Simulation(double arrivalTime, double serviceTime, int numberOfServers,int simPersons)
+        public IActionResult MM1Simulation(double arrivalTime, double serviceTime, int numberOfServers,int simPersons, double L, double Lq, double W, double Wq)
         {
             // Run the M/M/1 simulation
             var simulation = new MM1Simulation(simPersons, arrivalTime, serviceTime);
@@ -25,16 +25,15 @@ namespace Queuing_System.Controllers
 
             // Get simulation results
             var result = simulation.GetResults();
+            SetCalculationResults(L, Lq, W, Wq, result);
 
             Plot(result);
-            //ViewBag.QueueLengths = result.QueueLengths;
-            //ViewBag.TimePoints = result.TimeEvents;
 
             return View("SimulationResults",result);
         }
 
         [HttpGet]
-        public IActionResult MMcSimulation(double arrivalTime, double serviceTime, int numberOfServers, int simPersons)
+        public IActionResult MMcSimulation(double arrivalTime, double serviceTime, int numberOfServers, int simPersons, double L, double Lq, double W, double Wq)
         {
             try
             {
@@ -49,6 +48,7 @@ namespace Queuing_System.Controllers
 
                 // Get simulation results
                 var result = simulation.GetResults();
+                SetCalculationResults(L, Lq, W, Wq, result);
 
                 Plot(result);
                 return View("SimulationResults", result);
@@ -62,7 +62,7 @@ namespace Queuing_System.Controllers
         }
 
         [HttpGet]
-        public IActionResult MM1kSimulation(double arrivalTime, double serviceTime, int totalCapacity,int simPersons)
+        public IActionResult MM1kSimulation(double arrivalTime, double serviceTime, int totalCapacity,int simPersons, double L, double Lq, double W, double Wq)
         {
             try
             {
@@ -77,6 +77,7 @@ namespace Queuing_System.Controllers
 
                 // Get simulation results
                 var result = simulation.GetResults();
+                SetCalculationResults(L, Lq, W, Wq, result);
 
                 Plot(result);
                 return View("SimulationResults", result);
@@ -90,7 +91,7 @@ namespace Queuing_System.Controllers
         }
 
         [HttpGet]
-        public IActionResult MMckSimulation(double arrivalTime, double serviceTime, int numberOfServers, int totalCapacity, int simPersons)
+        public IActionResult MMckSimulation(double arrivalTime, double serviceTime, int numberOfServers, int totalCapacity, int simPersons, double L, double Lq, double W, double Wq)
         {
             try
             {
@@ -105,6 +106,7 @@ namespace Queuing_System.Controllers
 
                 // Get simulation results
                 var result = simulation.GetResults();
+                SetCalculationResults(L, Lq, W, Wq, result);
 
                 Plot(result);
                 return View("SimulationResults", result);
@@ -116,6 +118,7 @@ namespace Queuing_System.Controllers
                 return View("SimulationResults");
             }
         }
+        #region Private Helper Methods
         private void Plot(SimulationResults result)
         {
             // Generate a plot
@@ -125,5 +128,13 @@ namespace Queuing_System.Controllers
 
             ViewBag.PlotImage = base64Image;
         }
+        private void SetCalculationResults(double L, double Lq, double W, double Wq, SimulationResults result)
+        {
+            result.L = L;
+            result.Lq = Lq;
+            result.W = W;
+            result.Wq = Wq;
+        } 
+        #endregion
     }
 }

@@ -12,5 +12,12 @@
         public List<double> ServiceTime { get; set; }
         public List<bool> IsBlocked { get; set; } = new List<bool>();
         public int? Capacity { get; set; }
+
+        #region Derived Params
+        public double L { get; set; }
+        public double Lq { get; set; }
+        public double W { get; set; }
+        public double Wq { get; set; }
+        #endregion
     }
 }

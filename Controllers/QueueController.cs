@@ -56,7 +56,7 @@ namespace Queuing_System.Controllers
                     // Ensure all required properties have valid values
                     if (((int)model.QueueType) > 0)  // Add a condition to check if QueueType is valid
                     {
-                        
+                        var calculationResults = _calculator.CalculateQueueParams(model);
 
                         // Redirect to the appropriate simulation action in SimulationController
                         return RedirectToAction(model.QueueType.ToString() + "Simulation", "Simulation", new
@@ -65,7 +65,11 @@ namespace Queuing_System.Controllers
                             serviceTime = model.ServiceTime,
                             numberOfServers = model.NumberOfServers,
                             totalCapacity = model.TotalCapacity,
-                            model.simPersons
+                            model.simPersons,
+                            model.L,
+                            model.Lq,
+                            model.W,
+                            model.Wq,
                         });
                     }
                     else

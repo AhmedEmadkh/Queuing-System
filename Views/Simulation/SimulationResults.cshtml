@@ -15,6 +15,42 @@
     }
 }
 
+@* Section For Calculating Average Results *@
+<div class="container mt-5">
+    <h2 class="text-center">Calculation Results</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Average number of customers in the system (L)</td>
+                <td>@Model.L</td>
+            </tr>
+            <tr>
+                <td>Average number of customers in the queue (Lq)</td>
+                <td>@Model.Lq</td>
+            </tr>
+            <tr>
+                <td>Average time a customer spends in the system (W)</td>
+                <td>@Model.W</td>
+            </tr>
+            <tr>
+                <td>Average time a customer spends in the queue (Wq)</td>
+                <td>@Model.Wq</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="@Url.Action("Index", "Queue")" class="btn btn-primary">Back to Input</a>
+</div>
+
+
+@* Section For Simulation Results *@
 <div class="container mt-5">
     <h2 class="text-center">Simulation Results</h2>
 
@@ -50,11 +86,11 @@
                         @for (int i = 0; i < Model.Persons.Count; i++)
                         {
                             <tr>
-                                <td>@(i+1)</td>
+                                <td>@(i + 1)</td>
                                 @* <td>@(i < Model.QueueLengths.Count ? Model.QueueLengths[i] : "")</td> *@
                                 <td>@(i < Model.WaitingTimes.Count ? Math.Round(Model.WaitingTimes[i], 5).ToString() : "")</td>
                                 <td>@(i < Model.WaitingTimesInQueue.Count ? Math.Round(Model.WaitingTimesInQueue[i], 5).ToString() : "")</td>
-                                <td>@Math.Round(Model.Persons[i].ArrivalTime,5)</td>
+                                <td>@Math.Round(Model.Persons[i].ArrivalTime, 5)</td>
                                 <td>
                                     @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value : int.MaxValue))
                                     {
@@ -70,12 +106,13 @@
                                     {
                                         <span class="text-danger">Φ</span>
                                     }
-                                    else{
+                                    else
+                                    {
                                         @Math.Round(Model.Persons[i].DepartureTime, 5)
                                     }
                                 </td>
                                 <td>
-                                    @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value: int.MaxValue))
+                                    @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value : int.MaxValue))
                                     {
                                         <span class="text-danger">Blocked</span>
                                     }
