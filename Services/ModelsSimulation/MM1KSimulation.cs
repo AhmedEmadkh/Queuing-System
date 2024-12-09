@@ -73,10 +73,10 @@ namespace Queuing_System.Services.ModelsSimulation
         {
             foreach (var person in PersonsList)
             {
-                var waitingTime = person.StartTime - person.ArrivalTime;
+                var waitingTime = person.DepartureTime - person.ArrivalTime;
                 WaitingTimes.Add(waitingTime);
 
-                var waitingTimeInQueue = Math.Max(0, waitingTime - person.ServiceTime);
+                var waitingTimeInQueue = person.StartTime - person.ArrivalTime;
                 WaitingTimesInQueue.Add(waitingTimeInQueue);
             }
         }

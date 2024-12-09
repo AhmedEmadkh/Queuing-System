@@ -88,11 +88,29 @@
                             <tr>
                                 <td>@(i + 1)</td>
                                 @* <td>@(i < Model.QueueLengths.Count ? Model.QueueLengths[i] : "")</td> *@
-                                <td>@(i < Model.WaitingTimes.Count ? Math.Round(Model.WaitingTimes[i], 5).ToString() : "")</td>
-                                <td>@(i < Model.WaitingTimesInQueue.Count ? Math.Round(Model.WaitingTimesInQueue[i], 5).ToString() : "")</td>
+                                <td>
+                                    @if (Model.Persons[i].IsBlocked)
+                                    {
+                                        <span class="text-danger">Φ</span>
+                                    }
+                                    else
+                                    {
+                                        @(i < Model.WaitingTimes.Count ? Math.Round(Model.WaitingTimes[i], 5).ToString() : "")
+                                    }
+                                 </td>
+                                <td>
+                                    @if (Model.Persons[i].IsBlocked)
+                                    {
+                                        <span class="text-danger">Φ</span>
+                                    }
+                                    else
+                                    {
+                                        @(i < Model.WaitingTimesInQueue.Count ? Math.Round(Model.WaitingTimesInQueue[i], 5).ToString() : "")
+                                    }
+                                </td>
                                 <td>@Math.Round(Model.Persons[i].ArrivalTime, 5)</td>
                                 <td>
-                                    @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value : int.MaxValue))
+                                    @if (Model.Persons[i].IsBlocked)
                                     {
                                         <span class="text-danger">Φ</span>
                                     }
@@ -102,7 +120,7 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value : int.MaxValue))
+                                    @if (Model.Persons[i].IsBlocked)
                                     {
                                         <span class="text-danger">Φ</span>
                                     }
@@ -112,7 +130,7 @@
                                     }
                                 </td>
                                 <td>
-                                    @if (IsBlocked(i, Model.QueueLengths, Model.Capacity.HasValue ? Model.Capacity.Value : int.MaxValue))
+                                    @if (Model.Persons[i].IsBlocked)
                                     {
                                         <span class="text-danger">Blocked</span>
                                     }

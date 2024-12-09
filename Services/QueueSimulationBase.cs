@@ -69,7 +69,7 @@ namespace Queuing_System.Services
                 foreach (var person in arrivingPersons)
                 {
                     // If capacity is defined and the queue length exceeds capacity, block the person
-                    if (Capacity.HasValue && currentQueueLength <= Capacity.Value)
+                    if (Capacity.HasValue && currentQueueLength < Capacity.Value)
                     {
                         // Person enters the queue
                         currentQueueLength++;
@@ -77,6 +77,7 @@ namespace Queuing_System.Services
                     else if(currentQueueLength > 0)
                     {
                         // Person is blocked, so we don't increment currentQueueLength
+                        person.IsBlocked = true;
                         blockedPersons.Add(person); // Track blocked persons
                     }
                 }
@@ -92,7 +93,14 @@ namespace Queuing_System.Services
                 }
 
                 // Add the current queue length to the QueueLengths list
-                QueueLengths.Add(currentQueueLength);
+                if (currentQueueLength != 0)
+                {
+                    QueueLengths.Add(currentQueueLength);
+                }
+                else if (currentQueueLength == 0)
+                {
+                    TimeEventList.Remove(TimeEventList.FirstOrDefault(t => t == time));
+                }
             }
         }
         protected void UpdateQueueLengths()
@@ -164,7 +172,19 @@ namespace Queuing_System.Services
             };
         }
 
-
+        ///private void RemoveBlockedPersons()
+        ///{
+        ///    // Filter out blocked persons based on the `IsBlocked` property
+        ///    var blockedPersons = PersonsList.Where(p => p.IsBlocked).ToList();
+        ///    foreach (var blockedPerson in blockedPersons)
+        ///    {
+        ///        // Remove both ArrivalTime and DepartureTime from the TimeEventList
+        ///        TimeEventList.Remove(blockedPerson.ArrivalTime);
+        ///        TimeEventList.Remove(blockedPerson.DepartureTime);
+        ///    }
+        ///    // Sort the TimeEventList after removing events
+        ///    TimeEventList = TimeEventList.OrderBy(t => t).ToList();
+        ///}
         #endregion
     }
 }

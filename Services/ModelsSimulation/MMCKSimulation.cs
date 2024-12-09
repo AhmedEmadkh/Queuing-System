@@ -44,32 +44,12 @@ namespace Queuing_System.Services.ModelsSimulation
             }
 
             TimeEventList = TimeEventList.OrderBy(t => t).ToList();
-
-            // Remove blocked persons (those exceeding capacity)
-            RemoveBlockedPersons();
-
             // Calculate waiting times
             CalculateWaitingTimes();
         }
 
 
-        private void RemoveBlockedPersons()
-        {
-            // Filter out blocked persons based on the `IsBlocked` property
-            var blockedPersons = PersonsList.Where(p => p.IsBlocked).ToList();
 
-            foreach (var blockedPerson in blockedPersons)
-            {
-                PersonsList.Remove(blockedPerson);
-
-                // Remove both ArrivalTime and DepartureTime from the TimeEventList
-                TimeEventList.Remove(blockedPerson.ArrivalTime);
-                TimeEventList.Remove(blockedPerson.DepartureTime);
-            }
-
-            // Sort the TimeEventList after removing events
-            TimeEventList = TimeEventList.OrderBy(t => t).ToList();
-        }
 
         private void CalculateWaitingTimes()
         {

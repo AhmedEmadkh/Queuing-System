@@ -42,7 +42,7 @@
                 Position = OxyPlot.Axes.AxisPosition.Bottom,
                 Title = "Time",
                 ItemsSource = timePoints,
-                LabelFormatter = index => timePoints[(int)index].ToString("F1"), // Format time points
+                LabelFormatter = index => timePoints[(int)index].ToString("F4"), // Format time points
                 Minimum = -0.5,
                 IntervalLength = 40, // Adjusts spacing between ticks
                 MajorStep = 1, // Ensure tick marks align with each index

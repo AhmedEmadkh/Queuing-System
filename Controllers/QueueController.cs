@@ -66,10 +66,10 @@ namespace Queuing_System.Controllers
                             numberOfServers = model.NumberOfServers,
                             totalCapacity = model.TotalCapacity,
                             model.simPersons,
-                            model.L,
-                            model.Lq,
-                            model.W,
-                            model.Wq,
+                            calculationResults.L,
+                            calculationResults.Lq,
+                            calculationResults.W,
+                            calculationResults.Wq,
                         });
                     }
                     else

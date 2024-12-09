@@ -227,7 +227,13 @@ namespace Queuing_System.Helpers
         #region MMCK
         public ResultModel Calculate_M_M_c_k(QueueModel model, double lambda, double mu)
         {
-            throw new NotImplementedException();
+            return new ResultModel
+            {
+                L = 0,
+                Lq = 0,
+                W = 0,
+                Wq = 0
+            };
         }
         #endregion
         #region Helper Methods
