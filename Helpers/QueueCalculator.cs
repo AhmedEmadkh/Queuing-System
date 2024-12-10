@@ -226,14 +226,100 @@ namespace Queuing_System.Helpers
         #endregion
         #region MMCK
         public ResultModel Calculate_M_M_c_k(QueueModel model, double lambda, double mu)
+
         {
+
+            if (model.NumberOfServers <= 0)
+
+            {
+                throw new ArgumentException("Number of servers must be greater than zero.");
+            }
+            if (lambda <= 0 || mu <= 0)
+            {
+                throw new ArgumentException("Lambda (arrival rate) and Mu (service rate) must be greater than zero.");
+            }
+
+            double r = lambda / mu;
+            double ρ = r / model.NumberOfServers;
+
+
+            double P0 = 0;
+
+            if (ρ == 1)
+            {
+                double sumPart = 0;
+                for (int i = 0; i <= model.NumberOfServers - 1; i++)
+                {
+                    sumPart += Math.Pow(r, i) / Factorial(i);
+                }
+
+                double lastPart = ((Math.Pow(r, model.NumberOfServers) / (Factorial(model.NumberOfServers))) * (model.TotalCapacity.Value - model.NumberOfServers + 1));
+
+                P0 = 1.0 / (sumPart + lastPart);
+
+
+            }
+            else
+            {
+
+                double sumPart = 0;
+                for (int i = 0; i <= model.NumberOfServers - 1; i++)
+                {
+                    sumPart += Math.Pow(r, i) / Factorial(i);
+                }
+
+                double lastPart = ((Math.Pow(r, model.NumberOfServers) / Factorial(model.NumberOfServers)) *
+                                  ((1 - Math.Pow(ρ, model.TotalCapacity.Value - model.NumberOfServers + 1)) / (1 - ρ)));
+                P0 = 1.0 / (sumPart + lastPart);
+            }
+
+
+            double Pk = 0;
+
+            if (0 <= model.TotalCapacity && model.TotalCapacity < model.NumberOfServers)
+            {
+                Pk = (((Math.Pow(lambda, model.TotalCapacity.Value)) / (Factorial(model.TotalCapacity.Value) * Math.Pow(mu, model.TotalCapacity.Value))) * P0);
+            }
+            else if (model.TotalCapacity >= model.NumberOfServers)
+            {
+                Pk = ((Math.Pow(lambda, model.TotalCapacity.Value) /
+                                (Factorial(model.NumberOfServers) * Math.Pow(model.NumberOfServers, model.TotalCapacity.Value - model.NumberOfServers) * Math.Pow(mu, model.TotalCapacity.Value))) * P0);
+
+            }
+
+
+
+            // Calculate Lq (average number of customers in the queue)
+            model.Lq = ((P0 * Math.Pow(r, model.NumberOfServers) * ρ) /
+                        (Factorial(model.NumberOfServers) * Math.Pow(1 - ρ, 2))) *
+                       (1 - Math.Pow(ρ, model.TotalCapacity.Value - model.NumberOfServers + 1) -
+                        (model.TotalCapacity.Value - model.NumberOfServers + 1) * Math.Pow(ρ, model.TotalCapacity.Value - model.NumberOfServers) * (1 - ρ));
+
+            // Calculate L (average number of customers in the system)
+            double part1 = model.Lq + model.NumberOfServers;
+            double part2 = 0;
+            for (int i = 0; i <= model.NumberOfServers - 1; i++)
+            {
+                part2 += (model.NumberOfServers - i) * ((Math.Pow(r, i)) / Factorial(i));
+            }
+
+            model.L = part1 + (P0 * part2);
+
+            // Calculate W (average time a customer spends in the system)
+            model.W = model.L / (lambda * (1 - Pk));
+
+            // Calculate Wq (average time a customer spends in the queue)
+
+            model.Wq = model.Lq / (lambda * (1 - Pk));
+
             return new ResultModel
             {
-                L = 0,
-                Lq = 0,
-                W = 0,
-                Wq = 0
+                L = model.L,
+                Lq = model.Lq,
+                W = model.W,
+                Wq = model.Wq
             };
+
         }
         #endregion
         #region Helper Methods
